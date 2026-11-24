@@ -44,6 +44,7 @@ class PID:
         u_unsat = self.kp * e + self._i + self._d
         u = min(max(u_unsat, self.u_min), self.u_max)
 
-        windup_term = self.kb * (u - u_unsat) if self.anti_windup else 0.0
+        # back-calculation só faz sentido quando há ação integral (ki != 0)
+        windup_term = self.kb * (u - u_unsat) if (self.anti_windup and self.ki) else 0.0
         self._i += dt * (self.ki * e + windup_term)
         return u

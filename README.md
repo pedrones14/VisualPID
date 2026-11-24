@@ -12,10 +12,18 @@ Escolha uma planta, ajuste Kp, Ki e Kd, e veja na hora como o sistema responde e
 
 [![tests](https://github.com/pedrones14/VisualPID/actions/workflows/tests.yml/badge.svg)](https://github.com/pedrones14/VisualPID/actions/workflows/tests.yml)
 
-<!-- Depois de tirar as capturas de tela, apague esta linha e a última e salve as imagens em docs/:
-![VisualPID no modo claro](docs/screenshot-claro.png)
-![VisualPID no modo escuro](docs/screenshot-escuro.png)
--->
+<p align="center">
+  <img src="docs/screenshot-claro.png" alt="VisualPID no modo claro, comparando P e PI no motor DC" width="860">
+</p>
+
+<details>
+<summary>Ver no modo escuro</summary>
+
+<p align="center">
+  <img src="docs/screenshot-escuro.png" alt="VisualPID no modo escuro" width="860">
+</p>
+
+</details>
 
 ## O que faz
 
@@ -42,6 +50,10 @@ A cada passo `dt`, a página calcula o erro `e = r − y` e a saída do PID, `u 
 - O anti-windup usa **back-calculation**: quando o atuador satura, a integral deixa de acumular
 - As plantas são modelos em espaço de estados
 
+## Documentação técnica
+
+O PDF [**docs/VisualPID-documentacao-tecnica.pdf**](docs/VisualPID-documentacao-tecnica.pdf) (16 páginas) traz um **guia de uso passo a passo** (com experimentos guiados), a teoria de controle usada (realimentação, PID, erro em regime, windup, ruído), a modelagem das plantas, a implementação numérica, as decisões de projeto e a validação.
+
 ## Validação
 
 A pasta [`python/`](python/) contém um motor de referência com testes automatizados (pytest) que comparam o comportamento do simulador com a teoria. O GitHub Actions roda esses testes a cada commit, e os números do motor DC coincidem com os da página.
@@ -50,7 +62,7 @@ Motor DC, degrau de 1 rad/s, tensão limitada a ±12 V:
 
 | Controlador | Sobressinal | Acomodação (2 %) | Erro em regime |
 |---|---|---|---|
-| P (Kp=100) | 0 % | não acomoda | 0,28 rad/s |
+| P (Kp=100) | 0 % | não acomoda (erro de 9,1 % > 2 %) | 0,091 rad/s |
 | PI (Kp=100, Ki=200) | 1,5 % | 0,96 s | 0 |
 | PID (Kp=100, Ki=200, Kd=10) | 5,3 % | 1,82 s | ≈ 0 |
 
@@ -66,7 +78,7 @@ Sem anti-windup, o mesmo motor com Kp=100 e Ki=300 chega a **19,6 %** de sobress
 index.html      aplicação completa (HTML, CSS e JavaScript em um só arquivo)
 python/         motor de referência em Python e testes
 assets/logo/    logo do VisualPID (preta, colorida, branca e ícone)
-docs/           capturas de tela e imagem de compartilhamento
+docs/           documentação técnica (PDF), capturas de tela e imagem de compartilhamento
 .github/        testes automáticos (GitHub Actions)
 ```
 

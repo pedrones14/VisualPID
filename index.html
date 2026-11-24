@@ -133,7 +133,7 @@ function sim(c){const P=PL[c.plant],n=Math.round(c.tEnd/c.dt),dt=c.dt,S=4,h=dt/S
   if(yp===null)yp=ym;
   D=c.tauD/(c.tauD+dt)*D-c.kd/(c.tauD+dt)*(ym-yp);yp=ym;
   const e=r-ym,uu=c.kp*e+I+D,u=Math.min(Math.max(uu,c.umin),c.umax);
-  I+=dt*(c.ki*e+(c.aw?kb*(u-uu):0));
+  I+=dt*(c.ki*e+(c.aw&&c.ki?kb*(u-uu):0));
   const ui=u+(t>=c.tDist?c.dist:0);
   for(let s=0;s<S;s++){const k1=P.f(x,ui,c.p),k2=P.f(add(x,k1,h/2),ui,c.p),k3=P.f(add(x,k2,h/2),ui,c.p),k4=P.f(add(x,k3,h),ui,c.p);
    x=x.map((v,i)=>v+h/6*(k1[i]+2*k2[i]+2*k3[i]+k4[i]))}
@@ -171,7 +171,7 @@ function paint(W,H,head,th){K=th||LT;const cv=document.createElement('canvas');c
  g.fillStyle=K.bg;g.fillRect(0,0,W,H);const P=PL[cur.c.plant];let top=34*s;
  if(head){g.fillStyle=K.ink;g.font='600 '+18*s+'px Segoe UI,system-ui,sans-serif';g.textAlign='left';const lg=$('logoL');let tx=20*s;if(lg&&lg.complete&&lg.naturalWidth){const lh=36*s,lw=lh*lg.naturalWidth/lg.naturalHeight;g.drawImage(lg,20*s,8*s,lw,lh);tx=20*s+lw+20*s}
   g.fillText(tx>20*s?P.n:'VisualPID – '+P.n,tx,34*s);g.font=13*s+'px Segoe UI,system-ui,sans-serif';g.fillStyle=K.mute;g.fillText(summary(cur.c),20*s,66*s);top=84*s}
- const L=70*s,w=W-L-24*s,avail=H-top-30*s,h1=avail*.58-30*s,h2=avail*.42-34*s;
+ const L=70*s,w=W-L-24*s,avail=H-top-30*s,h1=avail*.58-30*s,h2=avail*.42-48*s;
  const cs=saved.map((q,i)=>({t:q.r.t,v:q.r.y,c:K.col[i],l:q.label}));
  plot(g,L,top+20*s,w,h1,{yl:P.yl,tEnd:cur.c.tEnd},[{t:cur.r.t,v:cur.r.r,c:K.ref,dash:1,w:1.5,l:'Referência'},...cs,{t:cur.r.t,v:cur.r.y,c:K.cur,l:'Atual'}],s);
  const us=saved.map((q,i)=>({t:q.r.t,v:q.r.u,c:K.col[i]}));
@@ -208,7 +208,7 @@ $('xjson').onclick=()=>dl(new Blob([JSON.stringify({parametros:cur.c,metricas:cu
 function makePDF(b64,w,h,lines){const enc=s=>{const a=new Uint8Array(s.length);for(let i=0;i<s.length;i++){const c=s.charCodeAt(i);a[i]=c<256?c:63}return a};
  const img=Uint8Array.from(atob(b64),c=>c.charCodeAt(0)),W=595,H=842,m=40,iw=W-2*m,ih=iw*h/w,parts=[],off=[];let len=0;
  const push=u=>{parts.push(u);len+=u.length},obj=(n,b)=>{off[n]=len;push(enc(n+' 0 obj\n'+b+'\nendobj\n'))};
- const esc=s=>s.replace(/τ/g,'tau').replace(/Ω/g,'ohm').replace(/→/g,'->').replace(/[\\()]/g,'\\$&');
+ const esc=s=>s.replace(/τ/g,'tau').replace(/Ω/g,'ohm').replace(/→/g,'->').replace(/[—–−]/g,'-').replace(/≈/g,'~').replace(/≥/g,'>=').replace(/≤/g,'<=').replace(/[\\()]/g,'\\$&');
  let cs='BT /F2 16 Tf '+m+' '+(H-50)+' Td ('+esc('VisualPID - Relatório de simulação')+') Tj ET\n',y=H-72;
  lines.forEach(l=>{cs+='BT /F1 10 Tf '+m+' '+y+' Td ('+esc(l)+') Tj ET\n';y-=14});
  cs+='q '+iw+' 0 0 '+ih+' '+m+' '+(y-ih-6)+' cm /Im1 Do Q\n';const cb=enc(cs);
